@@ -16,7 +16,7 @@
 
     .jump {
       position: absolute;
-      font-size: 5vw; /* Adaptativo al ancho de pantalla */
+      font-size: 5vw;
       color: hotpink;
       text-shadow: 0 0 10px pink, 0 0 20px deeppink;
       animation: magicJump 1.2s ease-out forwards;
@@ -49,9 +49,9 @@
     }
   </style>
 </head>
-<body ontouchstart="handleTouch(event)" onclick="createJump(event)">
-  <!-- Música de fondo (solo audio) -->
-  <audio autoplay loop>
+<body ontouchstart="handleTouch(event)" onclick="handleTouch(event)">
+  <!-- Audio oculto en bucle -->
+  <audio id="bgMusic" autoplay loop>
     <source src="https://archive.org/download/10DannaPaolaComprendoLyricVideo/2%20danna%20paola%20y%20chayanne%20%28veo%20en%20ti%20la%20luz%29%20letra.mp3" type="audio/mpeg">
     Tu navegador no soporta audio HTML5.
   </audio>
@@ -60,8 +60,19 @@
 
   <script>
     const mensaje = "Te amo Dani 💗";
+    const music = document.getElementById("bgMusic");
+    let musicStarted = false;
 
-    // Función para crear el texto animado
+    // Reproduce música con el primer toque en móvil
+    function handleTouch(e) {
+      createJump(e.touches ? e.touches[0] : e);
+      if (!musicStarted) {
+        music.play().catch(() => {}); // Silencio error si no puede reproducir
+        musicStarted = true;
+      }
+    }
+
+    // Efecto salto mágico
     function createJump(e) {
       const text = document.createElement('div');
       text.className = 'jump';
@@ -70,13 +81,6 @@
       text.textContent = mensaje;
       document.body.appendChild(text);
       setTimeout(() => text.remove(), 1200);
-    }
-
-    // Función para pantallas táctiles
-    function handleTouch(e) {
-      if (e.touches && e.touches.length > 0) {
-        createJump(e.touches[0]);
-      }
     }
 
     // Efecto Matrix rosa
@@ -92,7 +96,7 @@
     resizeCanvas();
 
     const fontSize = 20;
-    const columns = Math.floor(canvas.width / 140);
+    const columns = Math.floor(window.innerWidth / 140);
     const drops = Array(columns).fill(0);
 
     function drawMatrix() {
@@ -114,5 +118,3 @@
   </script>
 </body>
 </html>
-
-
