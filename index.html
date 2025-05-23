@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Te amo Dani</title>
+  <style>
+    body {
+      background-color: black;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      cursor: pointer;
+    }
+
+    .jump {
+      position: absolute;
+      font-size: 26px;
+      color: hotpink;
+      text-shadow: 0 0 10px pink, 0 0 20px deeppink;
+      animation: magicJump 1.2s ease-out forwards;
+      white-space: nowrap;
+    }
+
+    @keyframes magicJump {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+        filter: brightness(1.5);
+      }
+      40% {
+        transform: translateY(-80px) scale(1.3);
+        filter: brightness(2);
+      }
+      100% {
+        transform: translateY(0) scale(0.9);
+        opacity: 0;
+        filter: brightness(1);
+      }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body onclick="createJump(event)">
+  <canvas id="matrix"></canvas>
+
+  <script>
+    const mensaje = "Te amo Dani 💗";
+
+    // Efecto mágico al tocar
+    function createJump(e) {
+      const text = document.createElement('div');
+      text.className = 'jump';
+      text.style.left = (e.clientX - 50) + 'px';
+      text.style.top = (e.clientY - 20) + 'px';
+      text.textContent = mensaje;
+      document.body.appendChild(text);
+      setTimeout(() => text.remove(), 1200);
+    }
+
+    // Efecto Matrix rosa
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+
+    const columns = Math.floor(canvas.width / 160);
+    const drops = Array(columns).fill(0);
+
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'hotpink';
+      ctx.font = '20px monospace';
+
+      for (let i = 0; i < drops.length; i++) {
+        ctx.fillText(mensaje, i * 160, drops[i] * 20);
+        if (Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+
+    setInterval(drawMatrix, 50);
+  </script>
+</body>
+</html>
+
+
