@@ -49,72 +49,85 @@
     }
   </style>
 </head>
-<body ontouchstart="handleTouch(event)" onclick="handleTouch(event)">
-  <!-- Audio oculto en bucle -->
-  <audio id="bgMusic" autoplay loop>
-    <source src="https://archive.org/download/10DannaPaolaComprendoLyricVideo/2%20danna%20paola%20y%20chayanne%20%28veo%20en%20ti%20la%20luz%29%20letra.mp3" type="audio/mpeg">
-    Tu navegador no soporta audio HTML5.
-  </audio>
+<body>
 
-  <canvas id="matrix"></canvas>
+<audio id="bgMusic" loop>
+  <source src="https://archive.org/download/10DannaPaolaComprendoLyricVideo/2%20danna%20paola%20y%20chayanne%20%28veo%20en%20ti%20la%20luz%29%20letra.mp3" type="audio/mpeg">
+  Tu navegador no soporta audio HTML5.
+</audio>
 
-  <script>
-    const mensaje = "Te amo Dani 💗";
-    const music = document.getElementById("bgMusic");
-    let musicStarted = false;
+<canvas id="matrix"></canvas>
 
-    // Reproduce música con el primer toque en móvil
-    function handleTouch(e) {
-      createJump(e.touches ? e.touches[0] : e);
-      if (!musicStarted) {
-        music.play().catch(() => {}); // Silencio error si no puede reproducir
-        musicStarted = true;
+<script>
+  const mensaje = "Te amo Dani 💗";
+  const music = document.getElementById("bgMusic");
+  let musicStarted = false;
+
+  function playMusic() {
+    if (!musicStarted) {
+      music.play().catch(() => {});
+      musicStarted = true;
+    }
+  }
+
+  function createJump(x, y) {
+    const text = document.createElement('div');
+    text.className = 'jump';
+    text.style.left = (x - 50) + 'px';
+    text.style.top = (y - 30) + 'px';
+    text.textContent = mensaje;
+    document.body.appendChild(text);
+    setTimeout(() => text.remove(), 1200);
+  }
+
+  function handleTouch(e) {
+    playMusic();
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    const y = e.touches ? e.touches[0].clientY : e.clientY;
+    createJump(x, y);
+  }
+
+  document.body.addEventListener("touchstart", handleTouch);
+  document.body.addEventListener("mousedown", handleTouch);
+
+  const canvas = document.getElementById('matrix');
+  const ctx = canvas.getContext('2d');
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  const columns = Math.floor(window.innerWidth / 100);
+  const drops = Array(columns).fill(0);
+
+  function drawMatrix() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'hotpink';
+    ctx.font = '16px monospace';
+
+    for (let i = 0; i < drops.length; i++) {
+      ctx.fillText(mensaje, i * 100, drops[i] * 16);
+      if (drops[i] * 16 > canvas.height || Math.random() > 0.95) {
+        drops[i] = 0;
       }
+      drops[i]++;
     }
+  }
 
-    // Efecto salto mágico
-    function createJump(e) {
-      const text = document.createElement('div');
-      text.className = 'jump';
-      text.style.left = (e.clientX - 50) + 'px';
-      text.style.top = (e.clientY - 30) + 'px';
-      text.textContent = mensaje;
-      document.body.appendChild(text);
-      setTimeout(() => text.remove(), 1200);
-    }
+  setInterval(drawMatrix, 40);
 
-    // Efecto Matrix rosa
-    const canvas = document.getElementById('matrix');
-    const ctx = canvas.getContext('2d');
+  // Mensajes automáticos cada medio segundo
+  setInterval(() => {
+    const x = Math.random() * window.innerWidth;
+    const y = Math.random() * window.innerHeight;
+    createJump(x, y);
+  }, 500);
+</script>
 
-    function resizeCanvas() {
-      canvas.height = window.innerHeight;
-      canvas.width = window.innerWidth;
-    }
-
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    const fontSize = 20;
-    const columns = Math.floor(window.innerWidth / 140);
-    const drops = Array(columns).fill(0);
-
-    function drawMatrix() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'hotpink';
-      ctx.font = fontSize + 'px monospace';
-
-      for (let i = 0; i < drops.length; i++) {
-        ctx.fillText(mensaje, i * 140, drops[i] * fontSize);
-        if (Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
-      }
-    }
-
-    setInterval(drawMatrix, 50);
-  </script>
 </body>
 </html>
